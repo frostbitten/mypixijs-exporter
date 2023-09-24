@@ -1,0 +1,1 @@
+{% load pixiAdvExporter %}{{tp|exportData|safe}}
