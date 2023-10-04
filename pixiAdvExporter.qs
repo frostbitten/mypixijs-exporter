@@ -7,20 +7,31 @@ var exportSprites = function(sprites, locationPrefix)
         var frame = {
             x: s.frameRect.x,
             y: s.frameRect.y,
-            w: s.frameRect.width,
-            h: s.frameRect.height
+            w: s.rotated ? s.frameRect.height : s.frameRect.width,
+            h: s.rotated ? s.frameRect.width : s.frameRect.height
         };
         var spriteName = locationPrefix + s.trimmedName;
         result[spriteName] = {
             frame: frame,
             rotated: s.rotated,
             trimmed: s.trimmed,
-            spriteSourceSize: frame,
-            sourceSize: frame
+            spriteSourceSize: {
+                x: s.trimmed ? s.cornerOffset.x : 0,
+                y: s.trimmed ? s.cornerOffset.y : 0,
+                w: frame.w,
+                h: frame.h
+            },
+            sourceSize: {
+                w: frame.w,
+                h: frame.h
+            }
         };
     }
     return result;
 };
+
+
+
 
 var generateRelatedMultiPacks = function(root, currentTextureName)
 {
@@ -31,6 +42,7 @@ var generateRelatedMultiPacks = function(root, currentTextureName)
         var textureName = textures[i].fullName;
         if (textureName !== currentTextureName)
         {
+            textureName = textureName.split(".").slice(0, -1).join(".");
             relatedPacks.push(textureName + ".json");
         }
     }
