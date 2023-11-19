@@ -1,8 +1,6 @@
-var exportSprites = function(sprites, locationPrefix)
-{
+var exportSprites = function(sprites, locationPrefix) {
     var result = {};
-    for (var i = 0; i < sprites.length; i++)
-    {
+    for (var i = 0; i < sprites.length; i++) {
         var s = sprites[i];
         var frame = {
             x: s.frameRect.x,
@@ -16,14 +14,14 @@ var exportSprites = function(sprites, locationPrefix)
             rotated: s.rotated,
             trimmed: s.trimmed,
             spriteSourceSize: {
-                x: s.trimmed ? s.cornerOffset.x : 0,
-                y: s.trimmed ? s.cornerOffset.y : 0,
-                w: frame.w,
-                h: frame.h
+                x: s.trimmed ? s.sourceRect.x : 0,
+                y: s.trimmed ? s.sourceRect.y : 0,
+                w: s.trimmed ? s.sourceRect.width : frame.w,
+                h: s.trimmed ? s.sourceRect.height : frame.h
             },
             sourceSize: {
-                w: frame.w,
-                h: frame.h
+                w: s.untrimmedSize.width,
+                h: s.untrimmedSize.height
             }
         };
     }
@@ -54,6 +52,7 @@ var exportData = function(root)
     var settings = root.settings;
     var variantParams = root.variantParams;
     var locationPrefix = root.exporterProperties.location_prefix || '';
+    var includeScale = root.exporterProperties.include_scale;
     var currentTexture = root.allResults[root.variantIndex].textures[root.multiPackIndex];
     var currentTextureName = currentTexture.fullName;
     var doc = {
@@ -67,11 +66,14 @@ var exportData = function(root)
                 w: currentTexture.size.width,
                 h: currentTexture.size.height
             },
-            scale: variantParams.scale.toString(),
+            //scale: variantParams.scale.toString(),
             related_multi_packs: generateRelatedMultiPacks(root, currentTextureName),
             smartupdate: root.smartUpdateKey
         }
     };
+    if(includeScale) {
+        doc.meta.scale = variantParams.scale.toString();
+    }
     return JSON.stringify(doc, null, "\t");
 };
 
